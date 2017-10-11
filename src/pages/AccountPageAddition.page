@@ -1,0 +1,24 @@
+<apex:page standardController="Account">
+    <apex:includeScript value="{!$Resource.cometd}"/>
+    <apex:includeScript value="{!$Resource.jquery}"/>
+    <apex:includeScript value="{!$Resource.json2}"/>
+    <apex:includeScript value="{!$Resource.jquery_cometd}"/>
+    <apex:includeScript value="{!$Resource.cometdReplayExtension}"/>
+    <apex:includeScript value="{!$Resource.cometdCustom}"/>
+
+    <apex:pageBlock >
+        <apex:pageBlockSection >
+            <apex:pageBlockSectionItem > Addition </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    <script>
+        var cometdCustom = cometdCustom();
+        $(document).ready(function() {
+            cometdCustom.cometdConnect( cometdCustom.cometdURL('40.0'), '{!$Api.Session_ID}', '/event/UpdateObjectEvent__e', '-1', onMessageListener );
+        });
+        window.onbeforeunload = function() { cometdCustom.cometdDisconnect() };
+        function onMessageListener(message) {
+            cometdCustom.refreshPage(message, '{!$CurrentPage.parameters.Id}');
+        }
+    </script>
+</apex:page>

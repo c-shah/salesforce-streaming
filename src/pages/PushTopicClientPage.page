@@ -1,0 +1,43 @@
+<!--
+ - Created by chshah on 10/2/2017.
+ -->
+
+<apex:page id="PushTopicClientPage">
+
+    <apex:includeScript value="{!$Resource.cometd}"/>
+    <apex:includeScript value="{!$Resource.jquery}"/>
+    <apex:includeScript value="{!$Resource.json2}"/>
+    <apex:includeScript value="{!$Resource.jquery_cometd}"/>
+    <apex:includeScript value="{!$Resource.cometdReplayExtension}"/>
+    <apex:includeScript value="{!$Resource.cometdCustom}"/>
+
+    <script type="text/javascript">
+        var cometdCustom = cometdCustom();
+        console.log(' cometdCustom ' + cometdCustom );
+        $(document).ready(function() {
+            var loc = window.location;
+            var baseUrl = loc.protocol + "//" + loc.hostname + (loc.port? ":"+loc.port : "");
+            //cometdCustom.cometdConnect( baseUrl + '/cometd/40.0', '{!$Api.Session_ID}', '/topic/AccountUpdatePushTopic', '-1', onMessageListener );
+            //cometdCustom.cometdConnect( baseUrl + '/cometd/40.0', '{!$Api.Session_ID}', '/u/GenericUpdateTopic', '-1', onMessageListener );
+            cometdCustom.cometdConnect( getBaseURL() + '/cometd/40.0', '{!$Api.Session_ID}', '/event/UpdateObjectEvent__e', '-1', onMessageListener );
+        });
+        window.onbeforeunload = function() { cometdCustom.cometdDisconnect() };
+    </script>
+
+    <script>
+        function onMessageListener(message) {
+            console.log( 'on channel: ' + JSON.stringify(message.channel) );
+            console.log( 'Payload: ' + JSON.stringify(message.data.payload) );
+            console.log( 'SObject : ' + JSON.stringify(message.data.sobject ) );
+            console.log( 'Replay Id: ' + JSON.stringify(message.data.event.replayId) );
+            console.log( 'Full message: ' + JSON.stringify(message) );
+        }
+
+        function getBaseURL() {
+            var loc = window.location;
+            var baseUrl = loc.protocol + "//" + loc.hostname + (loc.port? ":"+loc.port : "");
+            return baseUrl;
+        }
+    </script>
+
+</apex:page>
